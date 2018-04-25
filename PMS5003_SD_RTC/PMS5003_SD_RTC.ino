@@ -195,27 +195,18 @@ void loop()
     Serial.print(dataString);  
     //Serial.println("  ]");
     Serial.println("");
-    
-    // open the file. note that only one file can be open at a time, 
-    // so you have to close this one before opening another.
-    //File dataFile = SD.open("datalog.txt", FILE_WRITE);
-
-    // to do:
-    // check to see if the file exists, and create a header if writing to a new file, or append rows if file already exists
-    // translate from python to C, maybe use a built in translation module
-    // -pjo 2018-04-24
 
     // call our file management functions
     getFileName();
     createFileName();
 
     // check if dataFile exists:
-    Serial.println("dataFile before: " + String(dataFile));
-    Serial.println("sd.exists: " + String(SD.exists(filename)));
+    //Serial.println("dataFile before: " + String(dataFile));
+    //Serial.println("sd.exists: " + String(SD.exists(filename)));
 
-    // re-open datafile
+    // open dataFile
     dataFile = SD.open(filename, FILE_WRITE);
-    Serial.println("dataFile after: " + String(dataFile));
+    //Serial.println("dataFile after: " + String(dataFile));
     
     // if the file is available, write to it:
     if (dataFile) {
@@ -224,7 +215,7 @@ void loop()
     }  
     // if the file isn't open, pop up an error:
     else {
-      Serial.println("error opening datalog.txt");
+      Serial.println("error opening" + String(filename));
       } 
     }
   //}   // end of OLEDtimer loop
@@ -353,9 +344,11 @@ int transmitPNC10_0(unsigned char *thebuf)
   return PNC10_0Val;
 }
 
+
+// utility function for digital clock display: prints preceding colon and leading 0
 void printDigits(int digits)
 {
-    // utility function for digital clock display: prints preceding colon and leading 0
+    
     if(digits < 10)
         Serial.print('0');
     Serial.print(digits);
@@ -372,29 +365,28 @@ String as2digits(int number) {
 }
 
 
-
-
-// creates a new file name with today's date
+// creates a new file name with current date
 void getFileName() {
 
   // store the date in this empty string
   String date = "";
 
-  // check the day each loop
+  // check the current day each loop by re-assigning tm object
   tmElements_t tm;
 
- 
+
+  // check if the RTC is prodiving a timestamp
   if (RTC.read(tm)) {
 
-    // SD library only supports 8 character file name and 4 character extension
+    // create a string object of today's date
     date = String(tmYearToCalendar(tm.Year)) +
                String(tm.Month) +
                String(tm.Day) + ".txt";
 
+    // convert to character array for use with SD methods
     date.toCharArray(filename, 16);
-
     Serial.println("filename: " + String(filename));
-    //dataFile = SD.open(str, FILE_WRITE);
+
     }
 }
 
@@ -411,9 +403,30 @@ void createFileName() {
     Serial.println("Creating new file.");
     //Serial.println(filename);
     dataFile = SD.open(filename, FILE_WRITE);
+
+
+    // create a header row when the file is first created
+    // using the PurpleAir SD vector names where possible
+    String header = "";
+    header += "date,";
+    header += "pm1_0_atm,";
+    header += "pm2_5_atm,";
+    header += "pm10_0_atm,";
+    header += "pm1_0_cf_1," ;
+    header += "pm2_5_cf_1," ;
+    header += "pm10_0_cf_1," ;
+    header += "p_0_3_um," ;
+    header += "p_0_5_um," ;
+    header += "pm_1_0_um,";
+    header += "pm_2_5_um,"; 
+    header += "pm_5_0_um,";
+    header += "pm_10_0_um";
+     
+    dataFile.println(header);
     //Serial.println("dataFile: " + String(dataFile));
     //Serial.println("sd.exists: " + String(SD.exists(filename)));
     Serial.println("");
+    Serial.println(header);
     dataFile.close();
   }
 }
