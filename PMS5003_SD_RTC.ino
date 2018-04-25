@@ -346,14 +346,6 @@ void printDigits(int digits)
     Serial.print(digits);
 }
 
-void printDigits1(int digits)
-{
-    // utility function for digital clock display: prints preceding colon and leading 0
-    if(digits < 10)
-        Serial1.print('0');
-    Serial1.print(digits);
-}
-
 // add leading zero to single digit month and day with this function
 String as2digits(int number) {
   String answer = "";
