@@ -1,12 +1,12 @@
- //******************************
- //*Abstract: Read value of PM1,PM2.5 and PM10 of air quality
- //
- //*Version：V3.1
- //*Author：Zuyang @ HUST
- //*Modified by Cain for Arduino Hardware Serial port compatibility
- //*Modified by Bennett Battaile, Meenakshi Rao, & Philip Orlando
- //*Date：March.25.2016
- //******************************
+//******************************
+//*Abstract: Read value of PM1,PM2.5 and PM10 of air quality
+//
+//*Version：V3.1
+//*Author：Zuyang @ HUST
+//*Modified by Cain for Arduino Hardware Serial port compatibility
+//*Modified by Bennett Battaile, Meenakshi Rao, & Philip Orlando
+//*Date：March.25.2016
+//******************************
 
 // sourcing dependencies
 #include <Arduino.h>
