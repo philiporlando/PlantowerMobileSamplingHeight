@@ -28,6 +28,12 @@ const int chipSelect = 10;              // SD card chip select for SPI protocol
 #define PERIOD 1*1*1000L
 unsigned long target_time = 0L;         // counter variable for 1-second loop
 
+// variables for date in file name 
+char filename[12] = {0};    // character array variable to store our converted date string for SD.open()
+File dataFile;              // file object
+tmElements_t tm;
+
+
 // mass density variables (micrograms per cubic meter)
 int PM1_0S = 0;             //define PM1.0 standard value of the PMS5003
 int PM10_0S = 0;            //define PM10 standard value of the PMS5003
@@ -192,19 +198,29 @@ void loop()
     
     // open the file. note that only one file can be open at a time, 
     // so you have to close this one before opening another.
-    File dataFile = SD.open("datalog.txt", FILE_WRITE);
+    //File dataFile = SD.open("datalog.txt", FILE_WRITE);
 
     // to do:
     // check to see if the file exists, and create a header if writing to a new file, or append rows if file already exists
     // translate from python to C, maybe use a built in translation module
     // -pjo 2018-04-24
+
+    // call our file management functions
+    getFileName();
+    createFileName();
+
+    // check if dataFile exists:
+    Serial.println("dataFile before: " + String(dataFile));
+    Serial.println("sd.exists: " + String(SD.exists(filename)));
+
+    // re-open datafile
+    dataFile = SD.open(filename, FILE_WRITE);
+    Serial.println("dataFile after: " + String(dataFile));
     
     // if the file is available, write to it:
     if (dataFile) {
       dataFile.println(dateTime + ", " + dataString);
       dataFile.close();
-      // print to the serial port too:
-      //Serial.println(dataString); // we're already printing to the serial monitor in the previous loop
     }  
     // if the file isn't open, pop up an error:
     else {
@@ -354,4 +370,53 @@ String as2digits(int number) {
   answer += String(number);
   return(answer);
 }
+
+
+
+
+// creates a new file name with today's date
+void getFileName() {
+
+  // store the date in this empty string
+  String date = "";
+
+  // check the day each loop
+  tmElements_t tm;
+
+ 
+  if (RTC.read(tm)) {
+
+    // SD library only supports 8 character file name and 4 character extension
+    date = String(tmYearToCalendar(tm.Year)) +
+               String(tm.Month) +
+               String(tm.Day) + ".txt";
+
+    date.toCharArray(filename, 16);
+
+    Serial.println("filename: " + String(filename));
+    //dataFile = SD.open(str, FILE_WRITE);
+    }
+}
+
+
+// creates a new file name each day if it doesn't already exist
+void createFileName() {
+  //Check if file exists?
+  if (SD.exists(filename)) {
+    //Serial.println("exists"); 
+    Serial.println("appending to existing file");
+  }
+  else {
+    //Serial.println("doesn't exist");
+    Serial.println("Creating new file.");
+    //Serial.println(filename);
+    dataFile = SD.open(filename, FILE_WRITE);
+    //Serial.println("dataFile: " + String(dataFile));
+    //Serial.println("sd.exists: " + String(SD.exists(filename)));
+    Serial.println("");
+    dataFile.close();
+  }
+}
+
+
 
