@@ -35,12 +35,12 @@ tmElements_t tm;
 
 
 // mass density variables (micrograms per cubic meter)
-int PM1_0S = 0;             //define PM1.0 standard value of the PMS5003
-int PM10_0S = 0;            //define PM10 standard value of the PMS5003
-int PM2_5S = 0;             //define PM2.5 standard value of the PMS5003
-int PM1_0A = 0;             //define PM1.0 atmospheric value of the PMS5003
-int PM2_5A = 0;             //define PM2.5 atmospheric value of the PMS5003
-int PM10_0A = 0;            //define PM10 atmospheric value of the PMS5003
+int PM1_0S=0;             //define PM1.0 standard value of the PMS5003
+int PM10_0S=0;            //define PM10 standard value of the PMS5003
+int PM2_5S=0;             //define PM2.5 standard value of the PMS5003
+int PM1_0A=0;             //define PM1.0 atmospheric value of the PMS5003
+int PM2_5A=0;             //define PM2.5 atmospheric value of the PMS5003
+int PM10_0A=0;            //define PM10 atmospheric value of the PMS5003
 
 // number density variables (particles per 100 mL)
 int PNC0_3=0;        //define PNC0.3 value of the PMS5003
@@ -215,7 +215,7 @@ void loop()
     }  
     // if the file isn't open, pop up an error:
     else {
-      Serial.println("error opening" + String(filename));
+      Serial.println("Error opening " + String(filename) + "!");
       } 
     }
   //}   // end of OLEDtimer loop
