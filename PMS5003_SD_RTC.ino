@@ -354,7 +354,7 @@ void printDigits1(int digits)
     Serial1.print(digits);
 }
 
-
+// add leading zero to single digit month and day with this function
 String as2digits(int number) {
   String answer = "";
   if (number >= 0 && number < 10) {
