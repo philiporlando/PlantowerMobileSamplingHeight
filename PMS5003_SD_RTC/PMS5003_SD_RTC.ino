@@ -12,8 +12,9 @@
 #include <SD.h>
 #include <SPI.h>
 #include <Wire.h>
+//#include <Time.h> // not needed for versions of Arduino > 1.6.0, use TimeLib.h instead!
 #include <TimeLib.h>
-//#include <DS3232RTC.h>     // we're using the DS3231 module, but the DS1307 library is what works...
+//#include <DS3232RTC.h>     // we're using the DS3231 module, but need to accommodate for non-AVR architecture boards, aka Teensy's Cortex-M4
 #include <DS1307RTC.h>       // we're using Paul's DS1307RTC library instead
 #define LENG 31             // 0x42 + 31 bytes equal to 32 bytes
 
@@ -33,6 +34,7 @@ char filename[12] = {0};    // character array variable to store our converted d
 File dataFile;              // file object
 tmElements_t tm;
 
+// built in led pin 
 
 // mass density variables (micrograms per cubic meter)
 int PM1_0S=0;             //define PM1.0 standard value of the PMS5003
@@ -51,6 +53,9 @@ int PNC5_0=0;        //define PNC5.0 value of the PMS5003
 int PNC10_0=0;       //define PNC10.0 value of the PMS5003
 
 
+// For non-AVR boards only. Not needed for AVR boards.
+//DS3232RTC RTC(false);     // for DS3232RTC library only. Tells constructor not to initialize the I2C bus.
+
 void setup()
 {
 //initialize serial ports
@@ -60,9 +65,11 @@ void setup()
   Serial1.begin(9600);         
   Serial1.setTimeout(1500);    //set the Timeout to 1500ms, longer than the data transmission periodic time of the sensor
 
+  // sync with the RTC
+  //RTC.begin(); // for DS3232RTC library only
   setSyncProvider(RTC.get);
 
-//RTC.set(now()); // set the RTC from system time // BB
+  //RTC.set(now()); // set the RTC from system time // BB
 
   if(timeStatus() != timeSet)
     Serial.println("Unable to sync with RTC");
