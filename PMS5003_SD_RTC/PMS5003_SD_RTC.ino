@@ -18,6 +18,8 @@
 #include <DS1307RTC.h>       // we're using Paul's DS1307RTC library instead
 #define LENG 31             // 0x42 + 31 bytes equal to 32 bytes
 
+// This is a test message for Judit :)
+
 // declaring variables for interfacing plantower serial data
 unsigned char buf[LENG];                // plantower buffer
 
