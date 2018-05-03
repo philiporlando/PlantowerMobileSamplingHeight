@@ -387,8 +387,8 @@ void getFileName() {
 
     // create a string object of today's date
     date = String(tmYearToCalendar(tm.Year)) +
-               String(tm.Month) +
-               String(tm.Day) + ".txt";
+               String(as2digits(tm.Month)) +
+               String(as2digits(tm.Day)) + ".txt";
 
     // convert to character array for use with SD methods
     date.toCharArray(filename, 16);
