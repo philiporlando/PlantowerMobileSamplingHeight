@@ -9,7 +9,6 @@
 ./..*.un~
 ./.*~
 
-# exclude R history, data, and .Rproj.user
+# exclude R history and data
 *.RData
 *.Rhistory
-./.*.Rproj.user
