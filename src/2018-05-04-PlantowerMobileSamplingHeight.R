@@ -148,6 +148,21 @@ gps <- ldply(gps_files, read_gps)
 # joining all the data into one tidy dataframe
 df <- bind_rows(dtrak, teensy) %>% inner_join(gps, by = "date")
 
+
+# create a new id variable for sensor height
+df$sensor_height <- ifelse(df$id == "DustTrak"
+                           ,"DustTrak"
+                           ,ifelse(df$id %in% c("Teensy_8","Teensy_7") # Teensy_8 is missing from this set
+                                   ,"24"
+                                   ,ifelse(df$id %in% c("Teensy_6", "Teeny_5")
+                                           ,"18"
+                                           ,ifelse(df$id %in% c("Teensy_4", "Teensy_3")
+                                                   ,"12"
+                                                   ,ifelse(df$id %in% c("Teensy_2", "Teensy_1")
+                                                           ,"8"
+                                                           ,NA)))))
+
+
 # explore time series data before making maps
 df %>% ggplot(aes(x = date, y = value, color = as.factor(id))) + 
   geom_jitter(alpha = 0.2) + 
@@ -236,6 +251,9 @@ df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>%
   theme_minimal()
 
 
+cols <- terrain.colors(6)
+
+# plot pm time series above vehicle speed and elevation data 
 p1 <- df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>% 
   filter(pollutant %in% c("pm2_5_atm"
                           ,"pm2.5")) %>%
@@ -243,25 +261,36 @@ p1 <- df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")
   #filter(value <=300) %>%
   
   # generate our ts plot
-  ggplot(aes(x = date, y = value, color = as.factor(id))) + 
+  ggplot(aes(x = date, y = value, color = as.factor(sensor_height))) + 
   #geom_point(alpha = 0.1, size = 0.9) + 
   #geom_smooth(se = FALSE) + 
   tidyquant::geom_ma(ma_fun = SMA
-                     ,n = 1
+                     ,n = 60
                      ,size = 1
                      ,aes(linetype = "solid"
                           ,alpha = 0.1)) +
+  scale_color_manual(values = cols) +
+  scale_alpha(guide = 'none') +
+  scale_linetype(guide = 'none') +
+  xlab("Time") + 
+  ylab(expression(~PM[2.5]~mu*g*m^-3)) + 
+  guides(color=guide_legend(title="Sensor Height (in)")) +
   theme_minimal()
 
 p2 <- df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>% 
   filter(pollutant %in% c("pm2_5_atm"
                           ,"pm2.5")) %>%
+  na.omit() %>%
   ggplot(aes(x = date, y = speed, color = elevation)) +
   # exclude shortlived spikes and zoom in on overall trends 
   geom_line() +
+  scale_color_gradientn(colours = terrain.colors(9)) + 
   # generate our ts plot
   #geom_point(alpha = 0.1, size = 0.9) + 
   #geom_smooth(se = FALSE) + 
+  xlab("Time") +
+  ylab(expression(mph)) +
+  guides(color=guide_legend(title="elevation (m)")) +
   theme_minimal()
 
 
