@@ -244,6 +244,15 @@ df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>%
 df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>% 
   filter(pollutant %in% c("pm2_5_atm"
                           ,"pm2.5")) %>%  
+  ggplot(aes(x = speed, y = value, color = sensor_height)) +
+  #geom_point(alpha = 0.1, size = 0.9) + 
+  #geom_smooth(se = FALSE) +
+  geom_smooth(method = "loess", se = FALSE) +
+  theme_minimal()
+
+df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>% 
+  filter(pollutant %in% c("pm2_5_atm"
+                          ,"pm2.5")) %>%  
   ggplot(aes(x = speed, y = value, color = id)) +
   #geom_point(alpha = 0.1, size = 0.9) + 
   #geom_smooth(se = FALSE) +
@@ -251,7 +260,16 @@ df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>%
   theme_minimal()
 
 
-cols <- terrain.colors(6)
+# make pseudo-continuous color scale for sensor height attribute:
+# see canopycontinuum diurnal variation six cities plots from January for adjusted specific factors based on colors
+# cols <- terrain.colors(6)
+# cols <- c("#00A600FF"
+#           ,"#00A600FF"
+#           ,"#00A600FF"
+#           ,"#00A600FF"
+#           ,"#00A600FF"
+#           ,"#00A600FF")
+
 
 # plot pm time series above vehicle speed and elevation data 
 p1 <- df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>% 
@@ -265,7 +283,7 @@ p1 <- df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")
   #geom_point(alpha = 0.1, size = 0.9) + 
   #geom_smooth(se = FALSE) + 
   tidyquant::geom_ma(ma_fun = SMA
-                     ,n = 60
+                     ,n = 2
                      ,size = 1
                      ,aes(linetype = "solid"
                           ,alpha = 0.1)) +
@@ -292,7 +310,6 @@ p2 <- df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")
   ylab(expression(mph)) +
   guides(color=guide_legend(title="elevation (m)")) +
   theme_minimal()
-
 
 grid.newpage()
 grid.draw(rbind(ggplotGrob(p1), ggplotGrob(p2), size = "last"))
