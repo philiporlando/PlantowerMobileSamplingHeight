@@ -2,7 +2,11 @@
 *.csv
 *.TXT
 *.txt
-*.*.TXT*.un~
+
+# exlude vim's undo files
+./.*.un~
+*.un~
+
 
 # exclude R history and data
 *.RData
