@@ -8,6 +8,10 @@
 *.un~
 ./..*.un~
 ./.*~
+*~
+*.swp
+*.swo
+
 
 # exclude R history, data, and .Rproj.user
 *.RData
