@@ -249,4 +249,5 @@ df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>%
   ggplot(aes(x = speed, y = value, color = id)) +
   #geom_point(alpha = 0.1, size = 0.9) + 
   geom_smooth(se = FALSE) +
+  geom_smooth(method = "loess", se = FALSE)
   theme_bw()
