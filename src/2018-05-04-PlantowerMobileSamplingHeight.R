@@ -176,7 +176,7 @@ df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>%
   ggplot(aes(x = date, y = value, color = as.factor(id))) + 
   #geom_point(alpha = 0.1, size = 0.9) + 
   #geom_smooth(se = FALSE) + 
-  geom_ma(ma_fun = SMA
+  tidyquant::geom_ma(ma_fun = SMA
           ,n = 1
           ,size = 1
           ,aes(linetype = "solid"
@@ -238,7 +238,7 @@ df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>%
   ggplot(aes(x = date, y = value, color = speed)) +
   geom_point(alpha = 0.1, size = 0.9) + 
   #geom_smooth(se = FALSE) + 
-  # geom_ma(ma_fun = SMA
+  # tidyquant::geom_ma(ma_fun = SMA
   #         ,n = 1
   #         ,size = 1
   #         ,aes(linetype = "solid"
