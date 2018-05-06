@@ -1,0 +1,8 @@
+# exclude data files
+*.csv
+*.TXT
+*.txt
+
+# exclude R history and data
+*.RData
+*.Rhistory
