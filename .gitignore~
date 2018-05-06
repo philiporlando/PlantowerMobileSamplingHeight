@@ -2,6 +2,8 @@
 *.csv
 *.TXT
 *.txt
+*.un~
+*.TXT~
 
 # exclude R history and data
 *.RData
