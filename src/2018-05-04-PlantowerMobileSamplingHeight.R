@@ -55,7 +55,9 @@ read_teensy <- function(fpath) {
   x$id <- paste0("Teensy_", id)
   x$date <- as.POSIXct(x$date, format = "%Y-%m-%d %H:%M:%S", tz = "US/Pacific")
   
+  # convert to tidy to rbind with dusttrak
   x <- x %>% gather(pollutant, value, -c(date, id))
+  
   return(x)
 }
 
@@ -84,6 +86,7 @@ read_dtrak<-function(fpath){
   x$id <- "DustTrak"
   x$date <- as.POSIXct(x$date, format = "%Y-%m-%d %H:%M:%S", tz = "US/Pacific")
   
+  # convert to tidy format to rbind with teensy data
   x <- x %>% gather(pollutant, value, -c(date, id))
   
   return(x)
@@ -248,6 +251,6 @@ df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>%
                           ,"pm2.5")) %>%  
   ggplot(aes(x = speed, y = value, color = id)) +
   #geom_point(alpha = 0.1, size = 0.9) + 
-  geom_smooth(se = FALSE) +
-  geom_smooth(method = "loess", se = FALSE)
+  #geom_smooth(se = FALSE) +
+  geom_smooth(method = "loess", se = FALSE) +
   theme_bw()
