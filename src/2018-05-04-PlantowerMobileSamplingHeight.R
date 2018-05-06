@@ -22,6 +22,7 @@ p_load(readr
        ,stringr
        ,magrittr
        ,rlist
+       ,grid
        ,gridExtra
        ,tidyquant
 )
@@ -165,30 +166,41 @@ df %>% filter(pollutant %!in% c("p_0_3_um"
 
 
 
+# github example code 
+# library(ggplot2)
+# library(grid)
+# library(dplyr)
 
-df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>% 
-                filter(pollutant %in% c("pm2_5_atm"
-                               ,"pm2.5")) %>%
-  # exclude shortlived spikes and zoom in on overall trends 
-  filter(value <=300) %>%
-  
-  # generate our ts plot
-  ggplot(aes(x = date, y = value, color = as.factor(id))) + 
-  #geom_point(alpha = 0.1, size = 0.9) + 
-  #geom_smooth(se = FALSE) + 
-  tidyquant::geom_ma(ma_fun = SMA
-          ,n = 1
-          ,size = 1
-          ,aes(linetype = "solid"
-               ,alpha = 0.1)) +
-  theme_bw()
-
+# Create some data to play with. Two time series with the same timestamp.
+# df <- data.frame(DateTime = ymd("2010-07-01") + c(0:8760) * hours(2), series1 = rnorm(8761), series2 = rnorm(8761, 100))
+# 
+# Create the two plots.
+# plot1 <- df %>%
+#   select(DateTime, series1) %>%
+#   na.omit() %>%
+#   ggplot() +
+#   geom_point(aes(x = DateTime, y = series1), size = 0.5, alpha = 0.75) +
+#   ylab("Red dots / m") +
+#   theme_minimal() +
+#   theme(axis.title.x = element_blank())
+# 
+# plot2 <- df %>%
+#   select(DateTime, series2) %>%
+#   na.omit() %>%
+#   ggplot() +
+#   geom_point(aes(x = DateTime, y = series2), size = 0.5, alpha = 0.75) +
+#   ylab("Blue drops / L") +
+#   theme_minimal() +
+#   theme(axis.title.x = element_blank())
+# 
+# grid.newpage()
+# grid.draw(rbind(ggplotGrob(plot1), ggplotGrob(plot2), size = "last"))
 
 df %>% filter(pollutant %in% c("pm2.5"
                                ,"pm2_5_atm")) %>%
   ggplot(aes(x = date, y = value, color = as.factor(id))) + 
   geom_jitter(alpha = 0.2) +
-  theme_bw()
+  theme_minimal()
 
 
 df %>% filter(pollutant %in% c("pm2.5"
@@ -199,7 +211,7 @@ df %>% filter(pollutant %in% c("pm2.5"
   ggplot(aes(x = date, y = value, color = as.factor(id))) + 
   geom_point(alpha = 0.1) +
   #geom_smooth(method = "loess") +
-  theme_bw()
+  theme_minimal()
 
 df %>% filter(pollutant %in% c("pm2.5"
                                ,"pm2_5_atm")) %>%
@@ -209,7 +221,7 @@ df %>% filter(pollutant %in% c("pm2.5"
   ggplot(aes(x = date, y = value, color = as.factor(id))) + 
   geom_point(alpha = 0.1) +
   #geom_smooth(method = "loess") +
-  theme_bw()
+  theme_minimal()
 
 df %>% filter(pollutant %in% c("pm2.5"
                                ,"pm2_5_atm")) %>%
@@ -219,7 +231,7 @@ df %>% filter(pollutant %in% c("pm2.5"
   ggplot(aes(x = date, y = value, color = as.factor(id))) + 
   geom_point(alpha = 0.1) +
   #geom_smooth(method = "loess") +
-  theme_bw()
+  theme_minimal()
 
 
 df %>% filter(pollutant %in% c("pm2.5"
@@ -230,7 +242,7 @@ df %>% filter(pollutant %in% c("pm2.5"
   ggplot(aes(x = date, y = value, color = as.factor(id))) + 
   geom_point(alpha = 0.1) +
   #geom_smooth(method = "loess") +
-  theme_bw()
+  theme_minimal()
 
 df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>% 
   filter(pollutant %in% c("pm2_5_atm"
@@ -244,7 +256,7 @@ df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>%
   #         ,aes(linetype = "solid"
   #              ,alpha = 0.1)) +
   facet_wrap(~id) + 
-  theme_bw()
+  theme_minimal()
   
 df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>% 
   filter(pollutant %in% c("pm2_5_atm"
@@ -253,4 +265,40 @@ df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>%
   #geom_point(alpha = 0.1, size = 0.9) + 
   #geom_smooth(se = FALSE) +
   geom_smooth(method = "loess", se = FALSE) +
-  theme_bw()
+  theme_minimal()
+
+
+p1 <- df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>% 
+  filter(pollutant %in% c("pm2_5_atm"
+                          ,"pm2.5")) %>%
+  # exclude shortlived spikes and zoom in on overall trends 
+  #filter(value <=300) %>%
+  
+  # generate our ts plot
+  ggplot(aes(x = date, y = value, color = as.factor(id))) + 
+  #geom_point(alpha = 0.1, size = 0.9) + 
+  #geom_smooth(se = FALSE) + 
+  tidyquant::geom_ma(ma_fun = SMA
+                     ,n = 1
+                     ,size = 1
+                     ,aes(linetype = "solid"
+                          ,alpha = 0.1)) +
+  theme_minimal()
+
+p2 <- df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>% 
+  filter(pollutant %in% c("pm2_5_atm"
+                          ,"pm2.5")) %>%
+  ggplot(aes(x = date, y = speed, color = elevation)) +
+  # exclude shortlived spikes and zoom in on overall trends 
+  geom_line() +
+  # generate our ts plot
+  #geom_point(alpha = 0.1, size = 0.9) + 
+  #geom_smooth(se = FALSE) + 
+  theme_minimal()
+
+
+grid.newpage()
+grid.draw(rbind(ggplotGrob(p1), ggplotGrob(p2), size = "last"))
+#grid.arrange(p1, p2)
+
+
