@@ -1,0 +1,108 @@
+# created by Philip Orlando @ Sustainable Atmopsheres Research Lab
+# PI Dr. Linda George
+# 2018-05-04
+# May the 4th be with you!
+
+# Pilot run of our mobile PM sensors at various sampling heights (DustTrak included)
+
+
+# load the necessary packages
+if (!require(pacman)) {
+  install.packages("pacman")
+  library(pacman)
+}
+
+p_load(readr
+       ,ggplot2
+       ,plyr
+       ,dplyr
+       ,broom
+       ,reshape2
+       ,tidyr
+       ,stringr
+       ,magrittr
+       ,rlist
+       ,gridExtra
+)
+
+
+# create unanimous time resolution for all data
+time_resolution <- "1 sec"
+
+# creating a custon not-in function
+'%!in%' <- function(x,y)!('%in%'(x,y))
+
+
+# reads in on TSI DustTrak DRX 8533 file:
+
+# reads in one teensy_pm file:
+fpath <- "./data/teensy_pm/20180504_1.txt"
+read_teensy <- function(fpath) {
+  x <- read.csv(fpath, header = TRUE, stringsAsFactors = FALSE) 
+  x$date <- as.POSIXct(x$date, format = "%Y-%m-%d %H:%M:%S", tz = "US/Pacific")
+  # this removes the dupes in the raw data too
+  x <- x %>%
+    group_by(date = cut(date, breaks = time_resolution)) %>%
+    dplyr::summarise_all(funs(mean))
+  
+  # grab ID from filename and assign to new variable
+  file_name <- basename(fpath)
+  
+  # pick up here later!
+  id <- grep(filename, "")
+  
+  x$date <- as.POSIXct(x$date, format = "%Y-%m-%d %H:%M:%S", tz = "US/Pacific")
+  
+  return(x)
+}
+
+
+## reads in one TSI DustTrak DRX 8533 file:
+read_dtrak<-function(fpath){
+  sdate<-read.csv(fpath, header=FALSE, nrow=1, skip=7)
+  stime <-read.csv(fpath, header = FALSE, nrow=1, skip=6)  
+  startDate<-strptime(paste(sdate$V2, stime$V2), "%m/%d/%Y %H:%M:%S", tz="US/Pacific")
+  x<-read.csv(fpath, skip=37, stringsAsFactors = FALSE, header = FALSE)
+  names(x)<-c("elapsedtime","pm1","pm2.5","pm4","pm10","total","alarms","errors")
+  x$date<-x$elapsedtime+startDate
+  x$date <- as.POSIXct(x$date, format = "%m/%d/%Y %H:%M:%S", tz = "US/Pacific")
+  x<-x[,-c(1,7,8)]
+  x<-x[,c(6,1,2,3,4,5)]
+  x$pm1 <- x$pm1 * 1000
+  x$pm2.5 <- x$pm2.5 * 1000
+  x$pm4 <- x$pm4 * 1000
+  x$pm10 <- x$pm10 * 1000
+  x$total <- x$total * 1000
+  x <- x %>% 
+    group_by(date = cut(date, breaks = time_resolution)) %>%
+    dplyr::summarize(pm1 = mean(pm1), pm2.5 = mean(pm2.5), pm4 = mean(pm4), 
+                     pm10 = mean(pm10), total = mean(total))
+  ## manage time zones (necessary when using teensy sensors!)
+  x$date <- as.POSIXct(x$date, format = "%Y-%m-%d %H:%M:%S", tz = "US/Pacific")
+  return(x)
+  
+}
+
+
+
+
+# define relative file paths
+teensy_path <- "./data/teensy_pm/"
+dtrak_path <- "./data/dusttrak/"
+
+# pulling in a list of files within each directory
+teensy_files <- list.files(path = teensy_path, pattern = "\\.txt$",
+                              all.files=FALSE, full.names = TRUE,
+                              ignore.case = FALSE)
+
+# pulling in a list of files within each directory
+teensy_files <- list.files(path = teensy_path, pattern = "\\.csv$",
+                              all.files=FALSE, full.names = TRUE,
+                              ignore.case = FALSE)
+
+
+# pulling in the DustTrak data
+dtrak <- ldply(dtrak_files, read_dtrak)
+teensy <- ldply(teensy_files, read_teensy)
+
+
