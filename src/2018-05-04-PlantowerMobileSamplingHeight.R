@@ -340,7 +340,7 @@ grid.draw(rbind(ggplotGrob(p1), ggplotGrob(p2), size = "last"))
 g1 <- arrangeGrob(p1, p2)
 
 # ggsave is really slow at this DPI
-ggsave(filename = paste0("./figures/", format(Sys.time(), "%Y-%m-%d"), "_pm_speed_elevation.png"),
+ggsave(filename = paste0("./figures/", format(Sys.time(), "%Y-%m-%d"), "_time_series_pm_speed_elevation.png"),
        plot = g1,
        scale = 1,
        width = 16,
