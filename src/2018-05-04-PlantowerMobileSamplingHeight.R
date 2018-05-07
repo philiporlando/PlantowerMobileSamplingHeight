@@ -250,25 +250,47 @@ df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>%
   geom_smooth(method = "loess", se = FALSE) +
   theme_minimal()
 
-df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>% 
+pm_smooth <- df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>% 
   filter(pollutant %in% c("pm2_5_atm"
                           ,"pm2.5")) %>%  
   ggplot(aes(x = speed, y = value, color = id)) +
   #geom_point(alpha = 0.1, size = 0.9) + 
   #geom_smooth(se = FALSE) +
   geom_smooth(method = "loess", se = FALSE) +
+  xlab("Speed (mph)") + 
+  ylab(expression(~PM[2.5]~mu*g*m^-3)) + 
   theme_minimal()
+
+# ggsave is really slow at this DPI
+ggsave(filename = paste0("./figures/", format(Sys.time(), "%Y-%m-%d"), "_pm_speed_smooth.png"),
+       plot = pm_smooth,
+       scale = 1,
+       width = 16,
+       height = 10,
+       units = "in",
+       dpi = 600)
 
 
 # make pseudo-continuous color scale for sensor height attribute:
 # see canopycontinuum diurnal variation six cities plots from January for adjusted specific factors based on colors
-# cols <- terrain.colors(6)
+cols <- terrain.colors(10)
 # cols <- c("#00A600FF"
 #           ,"#00A600FF"
 #           ,"#00A600FF"
 #           ,"#00A600FF"
 #           ,"#00A600FF"
 #           ,"#00A600FF")
+# levels(df$sensor_height) <- c("DustTrak"
+#                               ,"8"
+#                               ,"12"
+#                               ,"18"
+#                               ,"24")
+# 
+# pal = c("DustTrak" = "#00A600FF"
+#         ,"8" = "#F0C9C0FF"
+#         ,"12" = "#EEB99FFF"
+#         ,"18" = "#E6E600FF"
+#         ,"24" = "#63C600FF")
 
 
 # plot pm time series above vehicle speed and elevation data 
@@ -287,7 +309,7 @@ p1 <- df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")
                      ,size = 1
                      ,aes(linetype = "solid"
                           ,alpha = 0.1)) +
-  scale_color_manual(values = cols) +
+  #scale_color_manual(values = pal) +
   scale_alpha(guide = 'none') +
   scale_linetype(guide = 'none') +
   xlab("Time") + 
@@ -315,4 +337,13 @@ grid.newpage()
 grid.draw(rbind(ggplotGrob(p1), ggplotGrob(p2), size = "last"))
 #grid.arrange(p1, p2)
 
+g1 <- arrangeGrob(p1, p2)
 
+# ggsave is really slow at this DPI
+ggsave(filename = paste0("./figures/", format(Sys.time(), "%Y-%m-%d"), "_pm_speed_elevation.png"),
+       plot = g1,
+       scale = 1,
+       width = 16,
+       height = 10,
+       units = "in",
+       dpi = 600)
