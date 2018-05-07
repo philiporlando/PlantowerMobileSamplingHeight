@@ -1,0 +1,20 @@
+# exclude data files
+*.csv
+*.TXT
+*.txt
+
+# exlude vim's undo files
+./.*.un~
+*.un~
+./..*.un~
+./.*~
+*~
+*.swp
+*.swo
+
+
+# exclude R history, data, and .Rproj.user
+*.RData
+*.Rhistory
+./.*.Rproj.user
+.Rproj.user
