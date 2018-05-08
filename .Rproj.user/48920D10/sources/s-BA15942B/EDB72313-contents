@@ -244,14 +244,26 @@ df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>%
   facet_wrap(~id) + 
   theme_minimal()
   
-df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>% 
+pm_smooth_height <- df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>% 
   filter(pollutant %in% c("pm2_5_atm"
                           ,"pm2.5")) %>%  
   ggplot(aes(x = speed, y = value, color = sensor_height)) +
   #geom_point(alpha = 0.1, size = 0.9) + 
   #geom_smooth(se = FALSE) +
   geom_smooth(method = "loess", se = FALSE) +
+  xlab("Speed (mph)") + 
+  ylab(expression(~PM[2.5]~mu*g*m^-3)) + 
   theme_minimal()
+
+# ggsave is really slow at this DPI
+ggsave(filename = paste0("./figures/", format(Sys.time(), "%Y-%m-%d"), "_pm_speed_height.png"),
+       plot = pm_smooth_height,
+       scale = 1,
+       width = 16,
+       height = 10,
+       units = "in",
+       dpi = 600)
+
 
 pm_smooth <- df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>% 
   filter(pollutant %in% c("pm2_5_atm"
