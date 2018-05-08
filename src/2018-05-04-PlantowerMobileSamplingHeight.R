@@ -276,17 +276,17 @@ ggsave(filename = paste0("./figures/", format(Sys.time(), "%Y-%m-%d"), "_pm_spee
 
 # make pseudo-continuous color scale for sensor height attribute:
 # see canopycontinuum diurnal variation six cities plots from January for adjusted specific factors based on colors
-#cols <- terrain.colors(5)
 #hue_pal()(6)
 
-cols <- scales::seq_gradient_pal("green", "red", "Lab")(seq(0,1, length.out = 5))
+#cols <- scales::seq_gradient_pal("green", "red", "Lab")(seq(0,1, length.out = 5))
 
-
+cols <- terrain.colors(6)
+# dropping the 6th color (gray) which doesn't show up well in the plot...
 pal = c("DustTrak" = "#00A600FF"
-         ,"8" = "#E6E600FF"
-         ,"12" = "#EAB64EFF"
-         ,"18" = "#EEB99FFF"
-         ,"24" = "#F2F2F2FF")
+         ,"8" = "#63C600FF"
+         ,"12" = "#E6E600FF"
+         ,"18" = "#EAB64EFF"
+         ,"24" = "#EEB99FFF")
 
 
 # plot pm time series above vehicle speed and elevation data 
