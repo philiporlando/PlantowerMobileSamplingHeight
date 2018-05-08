@@ -163,19 +163,13 @@ df$sensor_height <- ifelse(df$id == "DustTrak"
                                                            ,NA)))))
 
 
-<<<<<<< HEAD
-
 # define gcs for gps data
 wgs84 <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs "
 
 # convert to spatial points dataframe
 df_sf <- st_as_sf(df, coords = c("lon", "lat"), crs = wgs84)
 
-
-
-=======
 df$sensor_height <- factor(df$sensor_height, levels = c("DustTrak", "8", "12", "18", "24"))
->>>>>>> 3562942ce9676fb3078ee1438a53e317000d2035
 
 # explore time series data before making maps
 df %>% ggplot(aes(x = date, y = value, color = as.factor(id))) + 
