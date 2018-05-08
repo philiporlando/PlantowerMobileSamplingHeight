@@ -25,6 +25,7 @@ p_load(readr
        ,grid
        ,gridExtra
        ,tidyquant
+       ,scales
 )
 
 
@@ -162,6 +163,7 @@ df$sensor_height <- ifelse(df$id == "DustTrak"
                                                            ,NA)))))
 
 
+<<<<<<< HEAD
 
 # define gcs for gps data
 wgs84 <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs "
@@ -171,6 +173,9 @@ df_sf <- st_as_sf(df, coords = c("lon", "lat"), crs = wgs84)
 
 
 
+=======
+df$sensor_height <- factor(df$sensor_height, levels = c("DustTrak", "8", "12", "18", "24"))
+>>>>>>> 3562942ce9676fb3078ee1438a53e317000d2035
 
 # explore time series data before making maps
 df %>% ggplot(aes(x = date, y = value, color = as.factor(id))) + 
@@ -250,14 +255,26 @@ df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>%
   facet_wrap(~id) + 
   theme_minimal()
   
-df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>% 
+pm_smooth_height <- df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>% 
   filter(pollutant %in% c("pm2_5_atm"
                           ,"pm2.5")) %>%  
   ggplot(aes(x = speed, y = value, color = sensor_height)) +
   #geom_point(alpha = 0.1, size = 0.9) + 
   #geom_smooth(se = FALSE) +
   geom_smooth(method = "loess", se = FALSE) +
+  xlab("Speed (mph)") + 
+  ylab(expression(~PM[2.5]~mu*g*m^-3)) + 
   theme_minimal()
+
+# ggsave is really slow at this DPI
+ggsave(filename = paste0("./figures/", format(Sys.time(), "%Y-%m-%d"), "_pm_speed_height.png"),
+       plot = pm_smooth_height,
+       scale = 1,
+       width = 16,
+       height = 10,
+       units = "in",
+       dpi = 600)
+
 
 pm_smooth <- df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>% 
   filter(pollutant %in% c("pm2_5_atm"
@@ -282,24 +299,17 @@ ggsave(filename = paste0("./figures/", format(Sys.time(), "%Y-%m-%d"), "_pm_spee
 
 # make pseudo-continuous color scale for sensor height attribute:
 # see canopycontinuum diurnal variation six cities plots from January for adjusted specific factors based on colors
-cols <- terrain.colors(10)
-# cols <- c("#00A600FF"
-#           ,"#00A600FF"
-#           ,"#00A600FF"
-#           ,"#00A600FF"
-#           ,"#00A600FF"
-#           ,"#00A600FF")
-# levels(df$sensor_height) <- c("DustTrak"
-#                               ,"8"
-#                               ,"12"
-#                               ,"18"
-#                               ,"24")
-# 
-# pal = c("DustTrak" = "#00A600FF"
-#         ,"8" = "#F0C9C0FF"
-#         ,"12" = "#EEB99FFF"
-#         ,"18" = "#E6E600FF"
-#         ,"24" = "#63C600FF")
+#hue_pal()(6)
+
+#cols <- scales::seq_gradient_pal("green", "red", "Lab")(seq(0,1, length.out = 5))
+
+cols <- terrain.colors(6)
+# dropping the 6th color (gray) which doesn't show up well in the plot...
+pal = c("DustTrak" = "#00A600FF"
+         ,"8" = "#63C600FF"
+         ,"12" = "#E6E600FF"
+         ,"18" = "#EAB64EFF"
+         ,"24" = "#EEB99FFF")
 
 
 # plot pm time series above vehicle speed and elevation data 
@@ -310,7 +320,10 @@ p1 <- df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")
   #filter(value <=300) %>%
   
   # generate our ts plot
-  ggplot(aes(x = date, y = value, color = as.factor(sensor_height))) + 
+  ggplot(aes(x = date
+             ,y = value
+             ,color = as.factor(sensor_height)
+             )) + 
   #geom_point(alpha = 0.1, size = 0.9) + 
   #geom_smooth(se = FALSE) + 
   tidyquant::geom_ma(ma_fun = SMA
@@ -318,7 +331,9 @@ p1 <- df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")
                      ,size = 1
                      ,aes(linetype = "solid"
                           ,alpha = 0.1)) +
-  #scale_color_manual(values = pal) +
+  #scale_color_gradientn(colours = terrain.colors(5)) +
+  #scale_color_manual(colors = terrain.colors(5)) +
+  scale_color_manual(values = pal) +
   scale_alpha(guide = 'none') +
   scale_linetype(guide = 'none') +
   xlab("Time") + 
@@ -326,7 +341,7 @@ p1 <- df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")
   guides(color=guide_legend(title="Sensor Height (in)")) +
   theme_minimal()
 
-p2 <- df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>% 
+  p2 <- df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")) %>% 
   filter(pollutant %in% c("pm2_5_atm"
                           ,"pm2.5")) %>%
   na.omit() %>%
