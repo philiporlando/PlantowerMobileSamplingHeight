@@ -325,6 +325,11 @@ p1 <- df %>% filter(date >= as.POSIXct(start_time, format = "%Y-%m-%d %H:%M:%S")
                      ,size = 1
                      ,aes(linetype = "solid"
                           ,alpha = 0.1)) +
+  annotate("text", x = as.POSIXct("2018-05-04 16:06:59"), y = 120, label = "Smoke from old car") +
+  annotate("text", x = as.POSIXct("2018-05-04 16:12:13"), y = 35, label = "School Bus + Construction Site") +
+  annotate("text", x = as.POSIXct("2018-05-04 16:15:00"), y = 70, label = "BBQ Smoke") +
+  annotate("text", x = as.POSIXct("2018-05-04 16:56:11"), y = 55, label = "I-405 Overpass") +
+  
   #scale_color_gradientn(colours = terrain.colors(5)) +
   #scale_color_manual(colors = terrain.colors(5)) +
   scale_color_manual(values = pal) +
