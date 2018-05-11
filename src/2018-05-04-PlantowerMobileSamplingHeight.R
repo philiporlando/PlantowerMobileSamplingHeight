@@ -149,7 +149,6 @@ gps <- ldply(gps_files, read_gps)
 # joining all the data into one tidy dataframe
 df <- bind_rows(dtrak, teensy) %>% inner_join(gps, by = "date")
 
-
 # create a new id variable for sensor height
 df$sensor_height <- ifelse(df$id == "DustTrak"
                            ,"DustTrak"
@@ -163,6 +162,12 @@ df$sensor_height <- ifelse(df$id == "DustTrak"
                                                            ,"8"
                                                            ,NA)))))
 
+
+# define gcs for gps data
+wgs84 <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs "
+
+# convert to spatial points dataframe
+df_sf <- st_as_sf(df, coords = c("lon", "lat"), crs = wgs84)
 
 df$sensor_height <- factor(df$sensor_height, levels = c("DustTrak", "8", "12", "18", "24"))
 
