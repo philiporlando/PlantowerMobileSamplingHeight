@@ -155,7 +155,7 @@ df$sensor_height <- ifelse(df$id == "DustTrak"
                            ,"DustTrak"
                            ,ifelse(df$id %in% c("Teensy_8","Teensy_7") # Teensy_8 is missing from this set
                                    ,"24"
-                                   ,ifelse(df$id %in% c("Teensy_6", "Teeny_5")
+                                   ,ifelse(df$id %in% c("Teensy_6", "Teensy_5")
                                            ,"18"
                                            ,ifelse(df$id %in% c("Teensy_4", "Teensy_3")
                                                    ,"12"
